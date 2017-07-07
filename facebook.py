@@ -3,6 +3,8 @@ import simplejson
 import codecs
 
 
+# definicion de las funciones
+
 def get_access_token():
     # pedir access token
     # este primero client id es mi id para usar la api
@@ -26,6 +28,16 @@ def get_posts_from_fanpage(page_id, access_token):
     return json
 
 
+def get_comments_from_post(post_id, access_token):
+    # pedir los comments del post
+    # https://graph.facebook.com/v2.8/121305961374091_688955347942480/comments?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
+    url_comments = 'https://graph.facebook.com/v2.8/{}/comments?access_token={}'.format(post_id, access_token)
+    response = requests.get(url_comments)
+    json = simplejson.loads(response.text)
+    return json
+
+
+# comienzo del programa principal, donde se llaman las funciones
 access_token = get_access_token()
 
 posts = get_posts_from_fanpage('cocacolaar', access_token)
@@ -33,16 +45,13 @@ post4_id = posts['data'][3]['id']
 # posts = get_posts_from_fanpage('pepsi', access_token)
 # posts = get_posts_from_fanpage('cocacolaar', access_token)
 
+comments_post4 = get_comments_from_post(post4_id, access_token)
+
 # accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
 #https://graph.facebook.com/v2.8/onlyforluxurylifestyle/feed?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
 # esto recorro primero y luego
 
 
-# pedir los comments del post
-# https://graph.facebook.com/v2.8/121305961374091_688955347942480/comments?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
-url_comments = 'https://graph.facebook.com/v2.8/{}/comments?access_token={}'.format(post4_id, access_token)
-response = requests.get(url_comments)
-json = simplejson.loads(response.text)
 
 # comment_data:
 # {
@@ -58,7 +67,7 @@ json = simplejson.loads(response.text)
 archivo = codecs.open('facebook_comments.csv', 'w', "utf-8")
 
 if __name__ == '__main__':
-    for comment_data in json['data']:
+    for comment_data in comments_post4['data']:
         message = comment_data['message']
         date = comment_data['created_time']
         user_name = comment_data['from']['name']
@@ -70,7 +79,7 @@ if __name__ == '__main__':
 
     archivo.close()
 
-    next_url = json['paging']['next']
+    next_url = comments_post4['paging']['next']
     print('Next: {}'.format(next_url))
     response = requests.get(next_url)
     print(response.text)
