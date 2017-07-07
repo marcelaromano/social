@@ -14,17 +14,25 @@ def get_access_token():
     return access_token
 
 
+def get_posts_from_fanpage(page_id, access_token):
+    # resonse.text  es un string el contenido de la repuesta... loads lo hace diccionario y de ahi los corchetes obtengo la clave accesos token
+    # pedir el feed (muro) de posts de la pagina
+    url_feed = 'https://graph.facebook.com/v2.8/{}/feed?access_token={}'.format(page_id, access_token)
+    response = requests.get(url_feed)
+
+    # el request es lo que llama la info con la url feed que incorpora esos dos argumentos
+    json = simplejson.loads(response.text)  # loads convierte el string de JSON a un diccionario de Python
+    #post4_id = json['data'][3]['id']
+    return json
+
+
 access_token = get_access_token()
 
-# resonse.text  es un string el contenido de la repuesta... loads lo hace diccionario y de ahi los corchetes obtengo la clave accesos token
-# pedir el feed (muro) de posts de la pagina
-page_id = 'cocacolaar'
-url_feed = 'https://graph.facebook.com/v2.8/{}/feed?access_token={}'.format(page_id, access_token)
-response = requests.get(url_feed)
+posts = get_posts_from_fanpage('cocacolaar', access_token)
+post4_id = posts['data'][3]['id']
+# posts = get_posts_from_fanpage('pepsi', access_token)
+# posts = get_posts_from_fanpage('cocacolaar', access_token)
 
-# el request es lo que llama la info con la url feed que incorpora esos dos argumentos
-json = simplejson.loads(response.text)  # loads convierte el string de JSON a un diccionario de Python
-post4_id = json['data'][3]['id']
 # accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
 #https://graph.facebook.com/v2.8/onlyforluxurylifestyle/feed?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
 # esto recorro primero y luego
