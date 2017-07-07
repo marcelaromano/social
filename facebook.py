@@ -16,10 +16,15 @@ def get_access_token():
     return access_token
 
 
-def get_posts_from_fanpage(page_id, access_token):
+def get_posts_from_fanpage(page_id, access_token, next_url=None):
     # resonse.text  es un string el contenido de la repuesta... loads lo hace diccionario y de ahi los corchetes obtengo la clave accesos token
     # pedir el feed (muro) de posts de la pagina
-    url_feed = 'https://graph.facebook.com/v2.8/{}/feed?access_token={}'.format(page_id, access_token)
+
+    if next_url is None:
+        url_feed = 'https://graph.facebook.com/v2.8/{}/feed?access_token={}'.format(page_id, access_token)
+    else:
+        url_feed = next_url
+
     response = requests.get(url_feed)
 
     # el request es lo que llama la info con la url feed que incorpora esos dos argumentos
@@ -76,6 +81,8 @@ for post in posts['data']:
 
     save_comments_to_csv(comments, 'facebook_comments.csv')
 
+next_url = posts['paging']['next']
+posts = get_posts_from_fanpage('cocacolaar', access_token, next_url)
 
         # accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
 #https://graph.facebook.com/v2.8/onlyforluxurylifestyle/feed?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
