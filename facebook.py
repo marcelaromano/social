@@ -63,6 +63,18 @@ post4_id = posts['data'][3]['id']
 comments_post4 = get_comments_from_post(post4_id, access_token)
 save_comments_to_csv(comments_post4, 'facebook_comments.csv')
 
+# recorrer todos los posts (primeros 25) y obtener los comentarios de cada uno de ellos
+print('------------')
+for post in posts['data']:
+    print(post['message'])
+
+    post_id = post['id']
+    comments = get_comments_from_post(post_id, access_token)
+
+    for comment in comments['data']:
+        print(' - ' + comment['message'])
+
+
 # accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
 #https://graph.facebook.com/v2.8/onlyforluxurylifestyle/feed?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
 # esto recorro primero y luego
