@@ -3,14 +3,18 @@ import simplejson
 import codecs
 
 
-# pedir access token
-# este primero client id es mi id para usar la api
-client_id = '234693623606637'
-client_secret = '6382e55e8cffca1b1e4230089ea5ccd5'
-url_access_token = 'https://graph.facebook.com/oauth/access_token?%20client_id={}&client_secret={}&grant_type=client_credentials'.format(client_id, client_secret)
-response = requests.get(url_access_token)
-access_token = simplejson.loads(response.text)['access_token']
-print(access_token)
+def get_access_token():
+    # pedir access token
+    # este primero client id es mi id para usar la api
+    client_id = '234693623606637'
+    client_secret = '6382e55e8cffca1b1e4230089ea5ccd5'
+    url_access_token = 'https://graph.facebook.com/oauth/access_token?%20client_id={}&client_secret={}&grant_type=client_credentials'.format(client_id, client_secret)
+    response = requests.get(url_access_token)
+    access_token = simplejson.loads(response.text)['access_token']
+    return access_token
+
+
+access_token = get_access_token()
 
 # resonse.text  es un string el contenido de la repuesta... loads lo hace diccionario y de ahi los corchetes obtengo la clave accesos token
 # pedir el feed (muro) de posts de la pagina
