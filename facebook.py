@@ -37,15 +37,31 @@ def get_comments_from_post(post_id, access_token):
     return json
 
 
+def save_comments_to_csv(comments, filename):
+    archivo = codecs.open(filename, 'w', "utf-8")
+
+    for comment_data in comments['data']:
+        message = comment_data['message']
+        date = comment_data['created_time']
+        user_name = comment_data['from']['name']
+        user_id = comment_data['from']['id']
+        print('{} ({}, {}): {}'.format(user_name, user_id, date, message))
+
+        linea = '{},{},{},{}\n'.format(user_id, user_name, date, message)
+        archivo.write(linea)
+
+    archivo.close()
+
+
 # comienzo del programa principal, donde se llaman las funciones
 access_token = get_access_token()
-
 posts = get_posts_from_fanpage('cocacolaar', access_token)
 post4_id = posts['data'][3]['id']
 # posts = get_posts_from_fanpage('pepsi', access_token)
 # posts = get_posts_from_fanpage('cocacolaar', access_token)
 
 comments_post4 = get_comments_from_post(post4_id, access_token)
+save_comments_to_csv(comments_post4, 'facebook_comments.csv')
 
 # accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
 #https://graph.facebook.com/v2.8/onlyforluxurylifestyle/feed?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
@@ -64,25 +80,11 @@ comments_post4 = get_comments_from_post(post4_id, access_token)
 #     "id": "688955347942480_689266391244709"
 # },
 
-archivo = codecs.open('facebook_comments.csv', 'w', "utf-8")
 
-if __name__ == '__main__':
-    for comment_data in comments_post4['data']:
-        message = comment_data['message']
-        date = comment_data['created_time']
-        user_name = comment_data['from']['name']
-        user_id = comment_data['from']['id']
-        print('{} ({}, {}): {}'.format(user_name, user_id, date, message))
-
-        linea = '{},{},{},{}\n'.format(user_id, user_name, date, message)
-        archivo.write(linea)
-
-    archivo.close()
-
-    next_url = comments_post4['paging']['next']
-    print('Next: {}'.format(next_url))
-    response = requests.get(next_url)
-    print(response.text)
+    # next_url = comments_post4['paging']['next']
+    # print('Next: {}'.format(next_url))
+    # response = requests.get(next_url)
+    # print(response.text)
 
     # aca sacamos el id de la posicion 4.... pero habria que hacerlo para todos los posts.
 # ghasta aca llegamos
