@@ -58,7 +58,7 @@ def save_comments_to_csv(comments, filename):
     archivo.close()
 
 
-def print_posts(posts):
+def save_and_print_posts(posts):
     for post in posts['data']:
         print(post['message'])
 
@@ -81,15 +81,26 @@ post4_id = posts['data'][3]['id']
 comments_post4 = get_comments_from_post(post4_id, access_token)
 save_comments_to_csv(comments_post4, 'facebook_comments.csv')
 
+
+cantidad_paginas = 5
+
 # recorrer todos los posts (primeros 25) y obtener los comentarios de cada uno de ellos
 print('------------')
-print('Pagina 1:')
-print_posts(posts)
 
-next_url = posts['paging']['next']
-posts2 = get_posts_from_fanpage('cocacolaar', access_token, next_url)
-print('Pagina 2:')
-print_posts(posts2)
+for numero_pagina in range(cantidad_paginas):
+    print('Pagina {}:'.format(numero_pagina + 1))
+    save_and_print_posts(posts)
+
+    next_url = posts['paging']['next']
+
+    # sobreescribo la variable posts con la nueva pagina
+    posts = get_posts_from_fanpage('cocacolaar', access_token, next_url)
+
+    print('---------------------------------------------------')
+    print('---------------------------------------------------')
+    print('---------------------------------------------------')
+    print('---------------------------------------------------')
+    print('---------------------------------------------------')
 
         # accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
 #https://graph.facebook.com/v2.8/onlyforluxurylifestyle/feed?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
