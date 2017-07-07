@@ -38,7 +38,7 @@ def get_comments_from_post(post_id, access_token):
 
 
 def save_comments_to_csv(comments, filename):
-    archivo = codecs.open(filename, 'w', "utf-8")
+    archivo = codecs.open(filename, 'a', "utf-8")
 
     for comment_data in comments['data']:
         message = comment_data['message']
@@ -74,8 +74,10 @@ for post in posts['data']:
     for comment in comments['data']:
         print(' - ' + comment['message'])
 
+    save_comments_to_csv(comments, 'facebook_comments.csv')
 
-# accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
+
+        # accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
 #https://graph.facebook.com/v2.8/onlyforluxurylifestyle/feed?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
 # esto recorro primero y luego
 
