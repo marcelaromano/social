@@ -58,6 +58,19 @@ def save_comments_to_csv(comments, filename):
     archivo.close()
 
 
+def print_posts(posts):
+    for post in posts['data']:
+        print(post['message'])
+
+        post_id = post['id']
+        comments = get_comments_from_post(post_id, access_token)
+
+        for comment in comments['data']:
+            print(' - ' + comment['message'])
+
+        save_comments_to_csv(comments, 'facebook_comments.csv')
+
+
 # comienzo del programa principal, donde se llaman las funciones
 access_token = get_access_token()
 posts = get_posts_from_fanpage('cocacolaar', access_token)
@@ -70,19 +83,13 @@ save_comments_to_csv(comments_post4, 'facebook_comments.csv')
 
 # recorrer todos los posts (primeros 25) y obtener los comentarios de cada uno de ellos
 print('------------')
-for post in posts['data']:
-    print(post['message'])
-
-    post_id = post['id']
-    comments = get_comments_from_post(post_id, access_token)
-
-    for comment in comments['data']:
-        print(' - ' + comment['message'])
-
-    save_comments_to_csv(comments, 'facebook_comments.csv')
+print('Pagina 1:')
+print_posts(posts)
 
 next_url = posts['paging']['next']
-posts = get_posts_from_fanpage('cocacolaar', access_token, next_url)
+posts2 = get_posts_from_fanpage('cocacolaar', access_token, next_url)
+print('Pagina 2:')
+print_posts(posts2)
 
         # accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
 #https://graph.facebook.com/v2.8/onlyforluxurylifestyle/feed?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
