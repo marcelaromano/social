@@ -58,7 +58,7 @@ def save_comments_to_csv(comments, filename):
     archivo.close()
 
 
-def save_and_print_posts(posts):
+def save_and_print_posts(posts, filename):
     for post in posts['data']:
         print(post['message'])
 
@@ -68,18 +68,20 @@ def save_and_print_posts(posts):
         for comment in comments['data']:
             print(' - ' + comment['message'])
 
-        save_comments_to_csv(comments, 'facebook_comments.csv')
+        save_comments_to_csv(comments, filename)
 
 
 # comienzo del programa principal, donde se llaman las funciones
+page_id = 'DiscoArgentina'
 access_token = get_access_token()
-posts = get_posts_from_fanpage('cocacolaar', access_token)
+posts = get_posts_from_fanpage(page_id, access_token)
 post4_id = posts['data'][3]['id']
 # posts = get_posts_from_fanpage('pepsi', access_token)
 # posts = get_posts_from_fanpage('cocacolaar', access_token)
 
 comments_post4 = get_comments_from_post(post4_id, access_token)
-save_comments_to_csv(comments_post4, 'facebook_comments.csv')
+filename = page_id + '.csv'
+save_comments_to_csv(comments_post4, filename)
 
 
 cantidad_paginas = 5
@@ -89,12 +91,12 @@ print('------------')
 
 for numero_pagina in range(cantidad_paginas):
     print('Pagina {}:'.format(numero_pagina + 1))
-    save_and_print_posts(posts)
+    save_and_print_posts(posts, filename)
 
     next_url = posts['paging']['next']
 
     # sobreescribo la variable posts con la nueva pagina
-    posts = get_posts_from_fanpage('cocacolaar', access_token, next_url)
+    posts = get_posts_from_fanpage(page_id, access_token, next_url)
 
     print('---------------------------------------------------')
     print('---------------------------------------------------')
