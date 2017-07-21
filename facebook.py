@@ -1,7 +1,7 @@
 import requests
 import simplejson
 import codecs
-
+import os
 
 # definicion de las funciones
 
@@ -42,7 +42,7 @@ def get_comments_from_post(post_id, access_token):
     return json
 
 
-def save_comments_to_csv(comments, filename):
+def save_comments_to_csv(page_id, comments, filename):
     archivo = codecs.open(filename, 'a', "utf-8")
 
     for comment_data in comments['data']:
@@ -52,13 +52,13 @@ def save_comments_to_csv(comments, filename):
         user_id = comment_data['from']['id']
         print('{} ({}, {}): {}'.format(user_name, user_id, date, message))
 
-        linea = '{},{},{},{}\n'.format(user_id, user_name, date, message)
+        linea = '{},{},{},{},{}\n'.format(page_id, user_id, user_name, date, message)
         archivo.write(linea)
 
     archivo.close()
 
 
-def save_and_print_posts(posts, filename):
+def save_and_print_posts(page_id, posts, filename):
     for post in posts['data']:
         try:
             print(post['message'])
@@ -69,44 +69,56 @@ def save_and_print_posts(posts, filename):
             for comment in comments['data']:
                 print(' - ' + comment['message'])
 
-            save_comments_to_csv(comments, filename)
+            save_comments_to_csv(page_id, comments, filename)
         except KeyError:
             print('Error: salteando post sin mensaje. {}'.format(post))
 
 
 # comienzo del programa principal, donde se llaman las funciones
-page_id = 'DiscoArgentina'
+page_ids = ['DiscoArgentina', 'cocacolaar']
+filename = 'supermercados.csv'
+os.remove(filename)
 access_token = get_access_token()
-posts = get_posts_from_fanpage(page_id, access_token)
-post4_id = posts['data'][3]['id']
-# posts = get_posts_from_fanpage('pepsi', access_token)
-# posts = get_posts_from_fanpage('cocacolaar', access_token)
-
-comments_post4 = get_comments_from_post(post4_id, access_token)
-filename = page_id + '.csv'
-save_comments_to_csv(comments_post4, filename)
+cantidad_paginas = 8
 
 
-cantidad_paginas = 5
+for page_id in page_ids:
+    posts = get_posts_from_fanpage(page_id, access_token)
+    #post4_id = posts['data'][3]['id']
+    # posts = get_posts_from_fanpage('pepsi', access_token)
+    # posts = get_posts_from_fanpage('cocacolaar', access_token)
 
-# recorrer todos los posts (primeros 25) y obtener los comentarios de cada uno de ellos
-print('------------')
+    #comments_post4 = get_comments_from_post(post4_id, access_token)
+    #save_comments_to_csv(comments_post4, filename)
 
-for numero_pagina in range(cantidad_paginas):
-    print('Pagina {}:'.format(numero_pagina + 1))
-    save_and_print_posts(posts, filename)
+    # recorrer todos los posts (primeros 25) y obtener los comentarios de cada uno de ellos
+    print('------------')
 
-    next_url = posts['paging']['next']
+    for numero_pagina in range(cantidad_paginas):
+        print('Pagina {}:'.format(numero_pagina + 1))
+        save_and_print_posts(page_id, posts, filename)
 
-    # sobreescribo la variable posts con la nueva pagina
-    posts = get_posts_from_fanpage(page_id, access_token, next_url)
+        try:
+            next_url = posts['paging']['next']
+
+            # sobreescribo la variable posts con la nueva pagina
+            posts = get_posts_from_fanpage(page_id, access_token, next_url)
+
+            print('---------------------------------------------------')
+            print('---------------------------------------------------')
+            print('---------------------------------------------------')
+            print('---------------------------------------------------')
+            print('---------------------------------------------------')
+        except Exception:
+            print('No hay siguiente pagina.')
 
     print('---------------------------------------------------')
     print('---------------------------------------------------')
-    print('---------------------------------------------------')
+    print('Fin {}'.format(page_id))
     print('---------------------------------------------------')
     print('---------------------------------------------------')
 
+print('End')
         # accedo a data , luego al cuarto elem por ej que es el que tine el comentario y luego le saco el id
 #https://graph.facebook.com/v2.8/onlyforluxurylifestyle/feed?access_token=234693623606637|g37OnFOwJcnckcSvkayhfImOlTM
 # esto recorro primero y luego
