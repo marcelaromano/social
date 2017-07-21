@@ -2,6 +2,8 @@ import requests
 import simplejson
 import codecs
 import os
+import re
+
 
 # definicion de las funciones
 
@@ -44,6 +46,7 @@ def get_comments_from_post(post_id, access_token):
 
 def save_comments_to_csv(page_id, comments, filename):
     archivo = codecs.open(filename, 'a', "utf-8")
+    archivo_regex = codecs.open('regex_' + filename, 'a', "utf-8")
 
     for comment_data in comments['data']:
         message = comment_data['message']
@@ -55,8 +58,11 @@ def save_comments_to_csv(page_id, comments, filename):
         linea = '{},{},{},{},{}\n'.format(page_id, user_id, user_name, date, message)
         archivo.write(linea)
 
-    archivo.close()
+        if filter_comment_by_regex(message) == True:
+            archivo_regex.write(linea)
 
+    archivo.close()
+    archivo_regex.close()
 
 def save_and_print_posts(page_id, posts, filename):
     for post in posts['data']:
@@ -72,6 +78,17 @@ def save_and_print_posts(page_id, posts, filename):
             save_comments_to_csv(page_id, comments, filename)
         except KeyError:
             print('Error: salteando post sin mensaje. {}'.format(post))
+
+
+def filter_comment_by_regex(comment):
+    patron1 = r'\b[bB]icis?[a-zA-Z ]* plegables?'
+    patron2 = r'\b[tT]ern'
+    patron3 = r'\b[bB]rompton'
+
+    if re.search(patron1, comment) or re.search(patron2, comment) or re.search(patron3, comment):
+        return True
+    else:
+        return False
 
 
 # comienzo del programa principal, donde se llaman las funciones
