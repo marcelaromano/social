@@ -95,6 +95,7 @@ def filter_comment_by_regex(comment):
 page_ids = ['DiscoArgentina', 'cocacolaar']
 filename = 'supermercados.csv'
 os.remove(filename)
+os.remove('regex_' + filename)
 access_token = get_access_token()
 cantidad_paginas = 8
 
