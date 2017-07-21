@@ -60,15 +60,18 @@ def save_comments_to_csv(comments, filename):
 
 def save_and_print_posts(posts, filename):
     for post in posts['data']:
-        print(post['message'])
+        try:
+            print(post['message'])
 
-        post_id = post['id']
-        comments = get_comments_from_post(post_id, access_token)
+            post_id = post['id']
+            comments = get_comments_from_post(post_id, access_token)
 
-        for comment in comments['data']:
-            print(' - ' + comment['message'])
+            for comment in comments['data']:
+                print(' - ' + comment['message'])
 
-        save_comments_to_csv(comments, filename)
+            save_comments_to_csv(comments, filename)
+        except KeyError:
+            print('Error: salteando post sin mensaje. {}'.format(post))
 
 
 # comienzo del programa principal, donde se llaman las funciones
