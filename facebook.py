@@ -65,19 +65,22 @@ def save_comments_to_csv(page_id, comments, filename):
     archivo_regex.close()
 
 def save_and_print_posts(page_id, posts, filename):
-    for post in posts['data']:
-        try:
-            print(post['message'])
+    if 'data' in posts:
+        for post in posts['data']:
+            try:
+                print(post['message'])
 
-            post_id = post['id']
-            comments = get_comments_from_post(post_id, access_token)
+                post_id = post['id']
+                comments = get_comments_from_post(post_id, access_token)
 
-            for comment in comments['data']:
-                print(' - ' + comment['message'])
+                for comment in comments['data']:
+                    print(' - ' + comment['message'])
 
-            save_comments_to_csv(page_id, comments, filename)
-        except KeyError:
-            print('Error: salteando post sin mensaje. {}'.format(post))
+                save_comments_to_csv(page_id, comments, filename)
+            except KeyError:
+                print('Error: salteando post sin mensaje. {}'.format(post))
+    else:
+        print('{} no es una fan page'.format(page_id))
 
 
 def filter_comment_by_regex(comment):
@@ -91,13 +94,22 @@ def filter_comment_by_regex(comment):
         return False
 
 
+def borrar_archivo(filename):
+    try:
+        os.remove(filename)
+    except FileNotFoundError:
+        pass
+
+
 # comienzo del programa principal, donde se llaman las funciones
-page_ids = ['DiscoArgentina', 'cocacolaar']
-filename = 'supermercados.csv'
-os.remove(filename)
-os.remove('regex_' + filename)
+page_ids = ['nycewheels1', 'cocacolaar']
+filename = 'nycewheels1.csv'
+
+borrar_archivo(filename)
+borrar_archivo('regex_' + filename)
+
 access_token = get_access_token()
-cantidad_paginas = 8
+cantidad_paginas = 2
 
 
 for page_id in page_ids:
