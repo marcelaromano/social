@@ -3,6 +3,7 @@ import simplejson
 import codecs
 import os
 import re
+import csv
 
 
 # definicion de las funciones
@@ -47,6 +48,8 @@ def get_comments_from_post(post_id, access_token):
 def save_comments_to_csv(page_id, post_text, comments, filename):
     archivo = codecs.open(filename, 'a', "utf-8")
     archivo_regex = codecs.open('regex_' + filename, 'a', "utf-8")
+    writer = csv.writer(archivo, quoting=csv.QUOTE_MINIMAL)
+    regex_writer = csv.writer(archivo_regex, quoting=csv.QUOTE_MINIMAL)
 
     for comment_data in comments['data']:
         message = comment_data['message']
@@ -55,11 +58,13 @@ def save_comments_to_csv(page_id, post_text, comments, filename):
         user_id = comment_data['from']['id']
         print('{} ({}, {}): {}'.format(user_name, user_id, date, message))
 
-        linea = '{},{},{},{},{},{}\n'.format(page_id, user_id, user_name, date, post_text, message)
-        archivo.write(linea)
+        #linea = '{},{},{},{},{},{}\n'.format(page_id, user_id, user_name, date, post_text, message)
+        #archivo.write(linea)
+        writer.writerow([page_id, user_id, user_name, date, post_text, message])
 
         if filter_comment_by_regex(message) == True:
-            archivo_regex.write(linea)
+            #archivo_regex.write(linea)
+            regex_writer.writerow([page_id, user_id, user_name, date, post_text, message])
 
     archivo.close()
     archivo_regex.close()
