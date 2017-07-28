@@ -44,7 +44,7 @@ def get_comments_from_post(post_id, access_token):
     return json
 
 
-def save_comments_to_csv(page_id, comments, filename):
+def save_comments_to_csv(page_id, post_text, comments, filename):
     archivo = codecs.open(filename, 'a', "utf-8")
     archivo_regex = codecs.open('regex_' + filename, 'a', "utf-8")
 
@@ -55,7 +55,7 @@ def save_comments_to_csv(page_id, comments, filename):
         user_id = comment_data['from']['id']
         print('{} ({}, {}): {}'.format(user_name, user_id, date, message))
 
-        linea = '{},{},{},{},{}\n'.format(page_id, user_id, user_name, date, message)
+        linea = '{},{},{},{},{},{}\n'.format(page_id, user_id, user_name, date, post_text, message)
         archivo.write(linea)
 
         if filter_comment_by_regex(message) == True:
@@ -68,7 +68,8 @@ def save_and_print_posts(page_id, posts, filename):
     if 'data' in posts:
         for post in posts['data']:
             try:
-                print(post['message'])
+                post_text = post['message']
+                print(post_text)
 
                 post_id = post['id']
                 comments = get_comments_from_post(post_id, access_token)
@@ -76,7 +77,7 @@ def save_and_print_posts(page_id, posts, filename):
                 for comment in comments['data']:
                     print(' - ' + comment['message'])
 
-                save_comments_to_csv(page_id, comments, filename)
+                save_comments_to_csv(page_id, post_text, comments, filename)
             except KeyError:
                 print('Error: salteando post sin mensaje. {}'.format(post))
     else:
@@ -102,8 +103,8 @@ def borrar_archivo(filename):
 
 
 # comienzo del programa principal, donde se llaman las funciones
-page_ids = ['nycewheels1', 'cocacolaar']
-filename = 'nycewheels1.csv'
+page_ids = ['MotoInARG']
+filename = 'MotoInARG.csv'
 
 borrar_archivo(filename)
 borrar_archivo('regex_' + filename)
