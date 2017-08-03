@@ -90,14 +90,15 @@ def save_and_print_posts(page_id, posts, filename):
 
 
 def filter_comment_by_regex(comment):
-    patron1 = r'\b[bB]icis?[a-zA-Z ]* plegables?'
-    patron2 = r'\b[tT]ern'
-    patron3 = r'\b[bB]rompton'
+    patrones = [r'\b[bB]icis?[a-zA-Z ]* plegables?', r'\b[tT]ern', r'\b[bB]rompton']
+    resultado = False
 
-    if re.search(patron1, comment) or re.search(patron2, comment) or re.search(patron3, comment):
-        return True
-    else:
-        return False
+    for patron in patrones:
+        if re.search(patron, comment):
+            resultado = True
+            break
+
+    return resultado
 
 
 def borrar_archivo(filename):
@@ -188,3 +189,5 @@ print('End')
 #http://stackoverflow.com/questions/12948809/trying-to-get-app-access-token
 #https://www.facebook.com/pg/onlyforluxurylifestyle/posts/
 #http://stackoverflow.com/questions/12065492/rest-api-for-website-which-uses-facebook-for-authentication
+
+
