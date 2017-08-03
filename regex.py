@@ -3,14 +3,15 @@ import unittest
 
 
 def filter_comment_by_regex(comment):
-    patron1 = r'\b[bB]icis?[a-zA-Z ]* plegables?'
-    patron2 = r'\b[tT]ern'
-    patron3 = r'\b[bB]rompton'
+    patrones = [r'\b[bB]icis?[a-zA-Z ]* plegables?', r'\b[tT]ern', r'\b[bB]rompton']
+    resultado = False
 
-    if re.search(patron1, comment) or re.search(patron2, comment) or re.search(patron3, comment):
-        return True
-    else:
-        return False
+    for patron in patrones:
+        if re.search(patron, comment):
+            resultado = True
+            break
+
+    return resultado
 
 
 class FilterRegexTest(unittest.TestCase):
