@@ -3,7 +3,11 @@ from bs4 import BeautifulSoup
 
 
 def procesar_link(href, urls, archivo):
-    if href != None and str(href)[0] not in ['#']:
+    # <a>Link</a> --> href == None
+    # <a href="">Link</a> --> href == ""
+    # <a href="#algo">Link</a> --> href == #algo
+    if href != None and href != "" and str(href)[0] not in ['#'] \
+            and not href.startswith('whatsapp:') and not href.startswith('javascript:'):
         if href.startswith('/'):
             href = root_domain + href
 

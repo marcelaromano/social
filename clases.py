@@ -4,7 +4,7 @@ import unittest
 def suma(a, b):
     return a + b
 
-
+# xxla clase vehiculo  el self es ninguna parametro de entrada.. lo que sale de la funcion es acelerando?
 class Vehiculo:
 
     def acelerar(self):
@@ -17,7 +17,8 @@ class Vehiculo:
 # la clase Auto hereda de Vehiculo (entre parentesis). Auto hereda atributos y operaciones de Vehiculo.
 class Auto(Vehiculo):
 
-    # constructor
+   # constructor....... xx self.color es un arreglo self ?    xxx para que crea la variable un-_color
+
     def __init__(self, un_color, una_patente):
         self.color = un_color
         self.patente = una_patente
