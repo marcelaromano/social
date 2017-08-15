@@ -33,16 +33,16 @@ def obtener_links(url):
         links_beautifulsoup = soup.find_all('a')
 
     # recorro todos los objetos de BS y armo una lista solo con los href (strings)
-    links = []
+    links = set()
     for link in links_beautifulsoup:
         href = link.get('href')
-        links.append(href)
+        links.add(href)
 
     # busqueda de links por expresiones regulares
     links_regex = re.findall('"http[^"]*"', html)
     for link in links_regex:
         link_sin_comillas = link[1:-1]
-        links.append(link_sin_comillas)
+        links.add(link_sin_comillas)
 
     return links
 
