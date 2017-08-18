@@ -1,6 +1,7 @@
 import requests
 import re
 from bs4 import BeautifulSoup
+import time
 
 
 def procesar_link(href, urls, archivo):
@@ -22,37 +23,41 @@ def procesar_link(href, urls, archivo):
         archivo.write(href + '\n')
 
 def obtener_links(url):
-    response = requests.get(url)
-    html = response.text
-    soup = BeautifulSoup(html, 'html.parser')
+    try:
+        response = requests.get(url)
 
-    content = soup.find('div', {'id': 'content'})
-    if content:
-        links_beautifulsoup = content.find_all('a')
-    else:
-        links_beautifulsoup = soup.find_all('a')
+        html = response.text
+        soup = BeautifulSoup(html, 'html.parser')
 
-    # recorro todos los objetos de BS y armo una lista solo con los href (strings)
-    links = set()
-    for link in links_beautifulsoup:
-        href = link.get('href')
-        if href is not None:
-            links.add(href)
+        content = soup.find('div', {'id': 'content'})
+        if content:
+            links_beautifulsoup = content.find_all('a')
+        else:
+            links_beautifulsoup = soup.find_all('a')
 
-    # busqueda de links por expresiones regulares
-    links_regex = re.findall('"http[^"]*"', html)
-    for link in links_regex:
-        if link is not None:
-            link_sin_comillas = link[1:-1]
-            links.add(link_sin_comillas)
+        # recorro todos los objetos de BS y armo una lista solo con los href (strings)
+        links = set()
+        for link in links_beautifulsoup:
+            href = link.get('href')
+            if href is not None:
+                links.add(href)
 
-    return links
+        # busqueda de links por expresiones regulares
+        links_regex = re.findall('"http[^"]*"', html)
+        for link in links_regex:
+            if link is not None:
+                link_sin_comillas = link[1:-1]
+                links.add(link_sin_comillas)
+
+        return links
+    except requests.exceptions.ConnectionError:
+        return []
+
 
 # se filtran links no deseados de acuerdo a una blacklist
 def filtrar_links_no_deseados(links):
     blacklist = ['/login', '/signup']
     links_filtrados = []
-
 
     for link in links:
         hay_que_eliminar = False
@@ -67,13 +72,17 @@ def filtrar_links_no_deseados(links):
 
     return links_filtrados
 
+def esperar(segundos=1):
+    time.sleep(segundos)
 
-root_url = 'https://www.kickstarter.com/discover/advanced?term=Bikes&woe_id=0&sort=magic&seed=2504144&page=1'
-root_domain = 'https://www.kickstarter.com'
+
+root_url = 'https://www.crunchbase.com/app/search/companies/7d363974ee8d53146f9558e7503049aa6f0572c2'
+root_domain = 'https://www.crunchbase.com'
 urls = []
 archivo = open('urls.txt', 'w')
 
 links = obtener_links(root_url)
+esperar()
 
 links_filtrados = filtrar_links_no_deseados(links)
 
@@ -89,6 +98,15 @@ archivo.write(separador + '\n')
 # se recorre links de la raiz
 for url in urls:
     links = obtener_links(url)
+    if len(links) == 0:
+        espera = 90
+        print('Ocurrio un requests.exceptions.ConnectionError, se esperaran {} segundos...'.format(espera))
+        time.sleep(espera)
+
+        # reintento obtener los links
+        links = obtener_links(url)
+
+    esperar()
 
     links_filtrados = filtrar_links_no_deseados(links)
 
