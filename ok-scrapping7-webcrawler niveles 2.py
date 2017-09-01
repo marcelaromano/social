@@ -80,47 +80,60 @@ def esperar(segundos=1):
     time.sleep(segundos)
 
 
-root_url = 'https://gust.com/search/new?utf8=%E2%9C%93&category=startups&keywords%5B%5D=bike&list_change_data=%7B%22filter_type%22%3A%22keywords%22%2C%22event_type%22%3A%22filtered%22%7D'
 
-root_domain = 'https://gust.com/'
-urls = []
+# cuando la url original viene con una llave … le tengo que poner doble llave  y luego a la url le agrego el place holder de la variable page .
+gust_base_url = 'https://gust.com/search/new?category=startups&keywords[]=bike&list_change_data={{%22filter_type%22:%22keywords%22,%22event_type%22:%22filtered%22}}&page={}&partial=results&utf8=%E2%9C%93'
+
+# lista de URLs a recorrer
+root_urls = []
+
+for page in range(1, 10):
+    root_urls.append(gust_base_url.format(page))
+
 archivo = open('urls-gust.txt', 'w')
 
-links = obtener_links(root_url)
-esperar()
+for root_url in root_urls:
+    print('Analizando root url: {}...'.format(root_url))
 
-links_filtrados = filtrar_links_no_deseados(links)
+    root_domain = 'https://gust.com/'
+    urls = []
 
-# links en la pagina raiz
-for link in links_filtrados:
-    procesar_link(link, urls, archivo)
-
-archivo.flush()
-
-separador = "------ Termino de recorrer la raiz ------"
-print(separador)
-archivo.write(separador + '\n')
-
-
-# se recorre links de la raiz
-for url in urls:
-    links = obtener_links(url)
-    if len(links) == 0:
-        espera = 300
-        print('Ocurrio un requests.exceptions.ConnectionError, se esperaran {} segundos...'.format(espera))
-        time.sleep(espera)
-
-        # reintento obtener los links
-        links = obtener_links(url)
-
+    links = obtener_links(root_url)
     esperar()
 
     links_filtrados = filtrar_links_no_deseados(links)
 
-    # links en las paginas de primer nivel de profundidad
+    # links en la pagina raiz
     for link in links_filtrados:
         procesar_link(link, urls, archivo)
 
     archivo.flush()
+
+    separador = "------ Termino de recorrer la raiz ------"
+    print(separador)
+    archivo.write(separador + '\n')
+
+
+    # se recorre links de la raiz
+    for url in urls:
+        links = obtener_links(url)
+        if len(links) == 0:
+            espera = 300
+            print('Ocurrio un requests.exceptions.ConnectionError, se esperaran {} segundos...'.format(espera))
+            time.sleep(espera)
+
+            # reintento obtener los links
+            links = obtener_links(url)
+
+        esperar()
+
+        links_filtrados = filtrar_links_no_deseados(links)
+
+        # links en las paginas de primer nivel de profundidad
+        for link in links_filtrados:
+            procesar_link(link, urls, archivo)
+
+        # obligar al programa a escribir efectivamente a disco
+        archivo.flush()
 
 archivo.close()

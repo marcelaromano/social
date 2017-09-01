@@ -10,8 +10,9 @@ def procesar_link(href, urls, archivo):
     # <a href="#algo">Link</a> --> href == #algo
 
     # un metodo para que el debugger frene solo si aparece el link que estamos buscando
-    if href != None and 'juggernaut-cargo-bikes-hauling-freight-and-pushing' in href:
+    if href != None and 'gobee' in href:
         print(href)
+
 
     if href != None and href != "" and str(href)[0] not in ['#'] \
             and not href.startswith('whatsapp:') and not href.startswith('javascript:'):
@@ -99,7 +100,7 @@ archivo.write(separador + '\n')
 for url in urls:
     links = obtener_links(url)
     if len(links) == 0:
-        espera = 90
+        espera = 300
         print('Ocurrio un requests.exceptions.ConnectionError, se esperaran {} segundos...'.format(espera))
         time.sleep(espera)
 
