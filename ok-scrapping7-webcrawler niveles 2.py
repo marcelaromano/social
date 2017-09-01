@@ -81,14 +81,18 @@ def esperar(segundos=1):
 
 
 
-# cuando la url original viene con una llave … le tengo que poner doble llave  y luego a la url le agrego el place holder de la variable page .
-gust_base_url = 'https://gust.com/search/new?category=startups&keywords[]=bike&list_change_data={{%22filter_type%22:%22keywords%22,%22event_type%22:%22filtered%22}}&page={}&partial=results&utf8=%E2%9C%93'
+# cuando la url original viene con una llave … le tengo que poner doble llave  y luego a la url le agrego el place holder de la variable page
+# https://gust.com/search/new?category=startups&keywords[]=pump&list_change_data={%22filter_type%22:%22keywords%22,%22event_type%22:%22filtered%22}&page=2&partial=results&utf8=%E2%9C%93
+gust_base_url = 'https://gust.com/search/new?category=startups&keywords[]={}&list_change_data={{%22filter_type%22:%22keywords%22,%22event_type%22:%22filtered%22}}&page={}&partial=results&utf8=%E2%9C%93'
+gust_keywords = ['bike', 'pump']
 
-# lista de URLs a recorrer
+# lista de URLs a recorrer... el format asume l ordden.. el primer orden es por ej bike,, el primer place holder reemplaza el producto.. pagina
 root_urls = []
 
-for page in range(1, 10):
-    root_urls.append(gust_base_url.format(page))
+for keyword in gust_keywords:
+    for page in range(1, 10):
+        root_urls.append(gust_base_url.format(keyword, page))
+
 
 archivo = open('urls-gust.txt', 'w')
 
